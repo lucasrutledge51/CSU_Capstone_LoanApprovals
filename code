@@ -1,0 +1,164 @@
+/* Generated Code (IMPORT) */
+/* Source File: Loan-Approval-Prediction.csv */
+/* Source Path: /home/u59055782 */
+/* Code generated on: 5/14/23, 10:17 PM */
+
+%web_drop_table(WORK.IMPORT);
+
+
+FILENAME REFFILE '/home/u59055782/Loan-Approval-Prediction.csv';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=CSV
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+
+%web_open_table(WORK.IMPORT);
+
+/* Define Descriptive Statistics and Freq Analysis */
+proc means data=WORK.IMPORT N MEAN MEDIAN STD  MIN MAX;  
+var ApplicantIncome LoanAmount;
+proc freq data=WORK.IMPORT;
+tables Gender Married Education Property_Area;
+run;
+
+/* Define Chi-square test */
+proc freq data = WORK.IMPORT;
+  tables Loan_Status*Gender / chisq;
+run;
+
+proc freq data = WORK.IMPORT;
+  tables Loan_Status*Married / chisq;
+run;
+
+proc freq data = WORK.IMPORT;
+  tables Loan_Status*Education / chisq;
+run;
+
+proc freq data = WORK.IMPORT;
+  tables Loan_Status*Property_Area / chisq;
+run;
+
+/* Define Kruskal-Wallis Test */
+proc npar1way data = WORK.IMPORT;
+  class Loan_Status;
+  var ApplicantIncome;
+run;
+
+proc npar1way data = WORK.IMPORT;
+  class Loan_Status;
+  var LoanAmount;
+run;
+
+/* Define Pie template */
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		layout region;
+		piechart category=Gender / group=Loan_Status groupgap=2% stat=pct 
+			datalabellocation=inside;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie data=WORK.IMPORT;
+run;
+
+ods graphics / reset;
+
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		layout region;
+		piechart category=Married / group=Loan_Status groupgap=2% stat=pct 
+			datalabellocation=inside;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie data=WORK.IMPORT;
+run;
+
+ods graphics / reset;
+
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		layout region;
+		piechart category=Education / group=Loan_Status groupgap=2% stat=pct 
+			datalabellocation=inside;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie data=WORK.IMPORT;
+run;
+
+ods graphics / reset;
+
+proc template;
+	define statgraph SASStudio.Pie;
+		begingraph;
+		layout region;
+		piechart category=Property_Area / group=Loan_Status groupgap=2% stat=pct 
+			datalabellocation=inside;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie data=WORK.IMPORT;
+run;
+
+ods graphics / reset;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sort data=WORK.IMPORT out=_HistogramTaskData;
+	by Loan_Status;
+run;
+
+proc sgplot data=_HistogramTaskData;
+	by Loan_Status;
+	histogram ApplicantIncome /;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+
+proc datasets library=WORK noprint;
+	delete _HistogramTaskData;
+	run;
+  
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sort data=WORK.IMPORT out=_HistogramTaskData;
+	by Loan_Status;
+run;
+
+proc sgplot data=_HistogramTaskData;
+	by Loan_Status;
+	histogram LoanAmount /;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+
+proc datasets library=WORK noprint;
+	delete _HistogramTaskData;
+	run;
